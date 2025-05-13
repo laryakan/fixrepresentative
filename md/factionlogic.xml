@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='utf-8'?>
+<diff>
+	<!-- Fix XRSGE https://www.nexusmods.com/x4foundations/mods/1140 - factionlogic replacement for FRF -->
+	<!--
+		PATH :
+		<diff>
+		  <add sel="//cue[@name='FactionLogicManagers']/cues">
+			<cue name="FreeSplitFactionLogic" comment="enabled from the start (curbs)">
+			  <cues>
+				<cue name="FreeSplitFactionLogic_Manager" ref="Manager">
+					...
+				  <param name="PreferredHQSpaceMacro" value="macro.cluster_408_sector002_macro" comment="Thuruk's Demise"/>
+					...
+				</cue>
+			  </cues>
+			</cue>
+			...
+	-->
+	<replace sel="/mdscript/cues/cue[@name='FactionLogicManagers']/cues/cue[@name='SplitFactionLogic']/cues/cue[@name='SplitFactionLogic_Manager']/param[@name='PreferredHQSpaceMacro']/@value">macro.cluster_408_sector001_macro</replace>
+</diff>
