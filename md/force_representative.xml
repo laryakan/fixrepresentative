@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mdscript name="ForceRepresentative" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="md.xsd">
+	<cues>
+		<!-- First version, force spawn of FRF Representative -->
+		<cue name="SpawnFRFRepresentative">
+			<debug_text text="[ForceRepresentative] SpawnFRFRepresentative init" />
+			<!-- godstationentry should list station id declared in god.xml, in this case, I took into account the XRSGE overload -->
+			<find_station name="this.$FRFStation" godstationentry="['wharf_freesplit_01', 'shipyard_freesplit_01', 'equipmentdock_freesplit_01', 'equipmentdock_freesplit_02', 'shipyard_freesplit_rs408', 'wharf_freesplit_rs408',  'tradestation_freesplit_acrimony01', 'equipmentdock_freesplit_ravine01']" multiple="1" space="player.galaxy"/>
+			<do_if value="this.$FRFStation">
+			    <set_value name="this.$Faction" exact="faction.freesplit"/>
+				<do_if value="not this.$Faction.representative.exists">
+					<create_representative_actor name="freesplit.representative" station="this.$FRFStation" faction="this.$Faction" />
+					<debug_text text="[ForceRepresentative] FRF Representative spawned" />
+				</do_if>
+				<do_else>
+					<debug_text text="[ForceRepresentative] FRF Representative already exists" />
+				</do_else>
+			</do_if>
+			<do_else>
+				<debug_text text="[ForceRepresentative] Can't find an FRF eligible station" />
+			</do_else>
+		</cue>
+	</cues>
+</mdscript>

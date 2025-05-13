@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<content id="Fix Representative"
+name="Fix Representative Spawn"
+description="Fix Representative Spawn as soon as the faction is in the galaxy"
+author="Laryakan"
+version="100"
+date="2025-05-10"
+save="false"
+enabled="1">
+</content>
