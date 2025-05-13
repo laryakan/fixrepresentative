@@ -2,28 +2,43 @@
 <mdscript xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="md.xsd" name="ForceRepresentative">
 	<cues>
 		<!-- First version, force spawn of FRF Representative -->
-		<cue name="SpawnFRFRepresentative" instantiate="true">
+		<cue name="SpawnFRFRepresentative">
 			<conditions>
 				<event_cue_signalled cue="md.Setup.Start" />
-				<check_value value="player.galaxy.macro.ismacro.{macro.xu_ep2_universe_macro}"/>
 			</conditions>
-			<debug_text text="[ForceRepresentative] SpawnFRFRepresentative init" />
-			 <show_notification text="'ForceRepresentative init...'"/>
-			<!-- godstationentry should list station id declared in god.xml, in this case, I took into account the XRSGE overload -->
-			<find_station name="$FRFStation" godstationentry="['wharf_freesplit_01', 'shipyard_freesplit_01', 'equipmentdock_freesplit_01', 'equipmentdock_freesplit_02', 'shipyard_freesplit_rs408', 'wharf_freesplit_rs408',  'tradestation_freesplit_acrimony01', 'equipmentdock_freesplit_ravine01']" multiple="1" space="player.galaxy"/>
-			<do_if value="$FRFStation">
-			    <set_value name="$Faction" exact="faction.freesplit"/>
-				<do_if value="not $Faction.representative.exists">
-					<create_representative_actor name="freesplit.representative" station="$FRFStation" faction="$Faction" />
-					<debug_text text="[ForceRepresentative] FRF Representative spawned" />
+			<delay exact="10s" />
+			<actions>
+				<debug_text text="'ForceRepresentative - SpawnFRFRepresentative check'" />
+				<!-- setting up the faction we want to check -->
+				<set_value name="this.$Faction" exact="faction.freesplit"/>
+				<show_notification text="'Checking out there is no factions representative missing...'"/>
+
+				<!-- if the game didn't spawn representative, it's probably because the PreferredHQSpaceMacro doesnt match any station in the current galaxy, we will force à new HQ  -->
+				<!-- godstationentry should list station id declared in god.xml -->
+				<find_station name="this.$FRFStations" godstationentry="['wharf_freesplit_01', 'shipyard_freesplit_01', 'equipmentdock_freesplit_01', 'equipmentdock_freesplit_02', 'shipyard_freesplit_rs408', 'wharf_freesplit_rs408',  'tradestation_freesplit_acrimony01', 'equipmentdock_freesplit_ravine01']" multiple="1" space="player.galaxy"/>
+				<find_station name="this.$FRFStation" godstationentry="['wharf_freesplit_01', 'shipyard_freesplit_01', 'equipmentdock_freesplit_01', 'equipmentdock_freesplit_02', 'shipyard_freesplit_rs408', 'wharf_freesplit_rs408',  'tradestation_freesplit_acrimony01', 'equipmentdock_freesplit_ravine01']" multiple="0" space="player.galaxy"/>
+
+				<!-- we found a matching station -->
+				<do_if value="this.$FRFStation">
+					<do_if value="not this.$Faction.representative.exists and this.$Faction.isactive">
+						<!-- if representative do not exists, we change the HQ no matter what -->
+						<set_value name="this.$Faction.headquarters" exact="this.$FRFStations"/>
+						<set_value name="md.$FactionData.{this.$Faction}.headquarters" exact="this.$FRFStations"/>
+
+						<!-- and then we create the representative -->
+						<create_representative_actor name="md.$FactionData.{this.$Faction}.$Representative" station="this.$FRFStation" faction="this.$Faction" />
+						<debug_text text="'ForceRepresentative - FRF Representative spawned'" />
+					</do_if>
+					<do_else>
+						<!-- if representative already exists, we do nothing -->
+						<debug_text text="'ForceRepresentative - FRF Representative already exists or faction is not active'" />
+					</do_else>
 				</do_if>
 				<do_else>
-					<debug_text text="[ForceRepresentative] FRF Representative already exists" />
+					<!-- if we didnt find any matching station to put the representative, we do nothing (it cant be worse) -->
+					<debug_text text="'ForceRepresentative - No eligible station for FRF Representative'" />
 				</do_else>
-			</do_if>
-			<do_else>
-				<debug_text text="[ForceRepresentative] Can't find an FRF eligible station" />
-			</do_else>
+			</actions>
 		</cue>
 	</cues>
 </mdscript>
