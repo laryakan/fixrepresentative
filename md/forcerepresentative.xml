@@ -4,126 +4,159 @@
 		<!-- First version, force spawn of FRF Representative -->
 		<cue name="ForceRepresentative_Start">
 			<conditions>
-				<!-- CHECK 1 TIME AT START -->
-				<event_cue_signalled cue="md.Setup.Start" />
+				<check_any>
+					<!-- CHECK 1 TIME AT START -->
+					<event_cue_signalled cue="md.Setup.Start" />
+					<!-- CHECK 1 TIME AT GAMELOAD -->
+					<!-- the script should run when loading a save because of md.Setup.Start, check it up -->
+					<!-- <event_cue_signalled cue="md.Setup.GameLoaded" /> -->
+				</check_any>
 			</conditions>
 			<delay exact="10s" />
 			<actions>
+			    <!--
+					<do_for_each name="$Faction" in="md.$FactionData">
+					</do_for_each>
+				-->
 				<show_notification text="'Dispatching the Missing Representative Task Force, aka MRTF...'"/>
 				<!-- FREE FAMILIES CHECK -->
-				<set_value name="ForceRepresentative.$Faction" exact="faction.freesplit"/>
-				<signal_cue cue="ForceRepresentative" />
+				<!-- <signal_cue_instantly cue="ForceRepresentative_FRF.ForceRepresentative_Spawn" /> -->
+				<signal_cue cue="frf" />
 			</actions>
 		</cue>
 		
-		<!-- First version, force spawn of FRF Representative -->
-		<cue name="ForceRepresentative" namespace="this" >
+		<cue name="frf" instanciate="true" namespace="this" >
 			<conditions>
 				<event_cue_signalled />
-				<!-- this.$Faction must be defined in this namespace (ForceRepresentative) before signal_cue -->
-				<check_value value="this.$Faction"/>
 			</conditions>
 			<actions>
-				<debug_text text="'ForceRepresentative - Received an instruction to check representative for : ' + this.$Faction" />
-				
-				<set_value name="this.$SearchSpace" exact="player.galaxy"/>
-				
-				<debug_text text="'ForceRepresentative - ' + this.$Faction.name + ' check'" />
+				<set_value name="$Faction" exact="faction.freesplit" />
+				<set_value name="$SearchSpace" exact="player.galaxy" />
+				<set_value name="$FactionLogic" exact="md.FactionLogic.FactionLogicManagers.SplitFactionLogic.SplitFactionLogic_Manager" />
+				<!-- this cue will serve to store every variable in next called cues -->
+				<signal_cue_instantly cue="spawn" param="namespace" />
+			</actions>
+		</cue>
 
-				<do_if value="not this.$Faction.representative.exists and this.$Faction.isactive">
+		<!-- force spawn representative -->
+		<cue name="spawn" >
+			<conditions>
+				<event_cue_signalled />
+			</conditions>
+			<actions>
+				<!-- extend scope to parent namespace (frf or other faction diminitive) -->
+				<set_value name="$Super" exact="event.param" />
+				<!-- get the $Faction value from the calling cue or lib -->
+				<set_value name="$Faction" exact="$Super.$Faction" />
+				<!-- get the $SearchSpace value from the calling cue or lib -->
+				<set_value name="$SearchSpace" exact="$Super.$SearchSpace" />
+				<!-- get the $FactionLogic value from the calling cue or lib -->
+				<set_value name="$FactionLogic" exact="$Super.$FactionLogic" />
+				
+				<!-- dabug, start script -->
+				<debug_text text="'ForceRepresentative - Received an instruction to check representative for : ' + $Faction" />
+				<debug_text text="'ForceRepresentative - ' + $Faction.name + ' check'" />
+
+				<do_if value="not $Faction.representative.exists and  $Faction.isactive">
 					<!-- Rep Missing -->
-					<show_notification text="'MRTF SITREP: ' + this.$Faction.name + ' representative missing'"/>
-					<debug_text text="'ForceRepresentative - ' + this.$Faction.name + ' representative missing, trying to relocate HQ'" />
-					<!-- Trying to find new HQ with the game methods -->
-					<remove_value name="md.$FactionData.{this.$Faction}.$Headquarters"/>
-					<remove_value name="md.$FactionData.{this.$Faction}.$Representative" comment="can't set it to null, just remove it"/>
+					<show_notification text="'MRTF SITREP: ' + $Faction.name + ' representative missing'"/>
+					<debug_text text="'ForceRepresentative - ' + $Faction.name + ' representative missing, trying to relocate HQ'" />
+					<!-- Trying to find new HQ with the game methods, do not work ATM @todo : find a way to access library methods -->
+					<!-- <signal_cue_instantly cue="$FactionLogic.RelocateHQ" /> -->
+					<!-- <signal_cue_instantly cue="$FactionLogic.CreateNewFactionRepresentative" /> -->
 					
 					<!-- Recheck, if the game has detected the missing Representative -->
-					<do_if value="not this.$Faction.representative.exists">
-						<debug_text text="'ForceRepresentative - ' + this.$Faction.name + ' forced HQ reset didnt solved the problem'" />
+					<do_if value="not $Faction.representative.exists">
+						<debug_text text="'ForceRepresentative - ' + $Faction.name + ' forced HQ reset didnt solved the problem'" />
 						<!-- if representative still do not exists, we change the HQ no matter what -->
-						<!-- <find_station_by_true_owner name="this.$HQ" space="this.$SearchSpace" faction="this.$Faction" /> -->
-						<find_station name="this.$HQ" space="this.$SearchSpace" owner="this.$Faction"/>
+						<!-- <find_station_by_true_owner name="$HQ" space="$SearchSpace" faction="$Faction" /> -->
 						
-						<do_if value="this.$HQ and this.$HQ.isoperational">
+						<find_station name="$Super.$HQ" space="$SearchSpace" owner="$Faction"/>
+						<do_if value="$Super.$HQ and $Super.$HQ.isoperational">
 							<!-- setting up the new HQ, extending data scope -->
-							<set_value name="md.$FactionData.{$Faction}.$Headquarters" exact="this.$HQ" />
+							<set_value name="md.$FactionData.{$Faction}.$Headquarters" exact="$Super.$HQ" />
 							<!-- and then we create the representative -->
-							<create_representative_actor name="this.$Representative" station="this.$HQ" faction="this.$Faction" />
-							<!-- create room and place npc -->
-							<signal_cue_instantly cue="ForceRepresentativeRoom" />
+							<create_representative_actor name="$Super.$Representative" station="$Super.$HQ" faction="$Faction" />
+							<!-- create room and place npc, pass super to store global variable un super -->
+							<signal_cue_instantly cue="make_room" param="$Super.namespace" />
 							<!-- extending data scope -->
-							<set_value name="md.$FactionData.{this.$Faction}.$Representative" exact="this.$Representative" />
+							<set_value name="md.$FactionData.{$Faction}.$Representative" exact="$Super.$Representative" />
+							<!-- notify the game that we have placed a new representative (for the conversation handler to be able to handle conversation with the player) -->
+							<!--  , do not work ATM @todo : find a way to access library methods -->
+							<!-- <signal_cue_instantly cue="md.NPC_FactionRepresentative.Handler_FactionRepresentative.FactionRepresentativeCreated" param="$Representative" check="false" /> -->
 						</do_if>
 						<do_else>
 							<!-- we didnt find any eligible station -->
-							<debug_text text="'ForceRepresentative - ' + this.$Faction.name + ' representative cant find HQ'"  filter="error" />
+							<debug_text text="'ForceRepresentative - ' + $Faction.name + ' representative cant find HQ'"  filter="error" />
 						</do_else>
 					</do_if>
 					<!-- Last check if representative exists and have a roomm where we can find hem -->
-					<do_if value="not this.$Faction.representative.exists" >
-						<show_notification text="'MRTF SITREP: ' + this.$Faction.name + ' representative unreachable'" />
-						<debug_text text="'ForceRepresentative - Cant spawn ' + this.$Faction.name + '  Representative'"  filter="error" />
+					<do_if value="not $Faction.representative.exists" >
+						<show_notification text="'MRTF SITREP: ' + $Faction.name + ' representative unreachable'" />
+						<debug_text text="'ForceRepresentative - Cant spawn ' + $Faction.name + '  Representative'"  filter="error" />
 					</do_if>
 					<do_else>
 						<!-- we made the representative respawned -->
-						<show_notification text="'MRTF SITREP: ' + this.$Faction.name + ' representative recovered'"/>
-						<debug_text text="'ForceRepresentative - ' + this.$Faction.name + ' representative spawned'" />
+						<show_notification text="'MRTF SITREP: ' + $Faction.name + ' representative recovered'"/>
+						<debug_text text="'ForceRepresentative - ' + $Faction.name + ' representative spawned'" />
 					</do_else>
 				</do_if>
 				<do_else>
 					<!-- if representative already exists, we do nothing -->
-					<debug_text text="'ForceRepresentative - ' + this.$Faction.name + ' representative already exists or faction is not active'" />
+					<debug_text text="'ForceRepresentative - ' + $Faction.name + ' representative already exists or faction is not active'" />
 				</do_else>
 			</actions>
 		</cue>
 		
-		<cue name="ForceRepresentativeRoom" namespace="this" >
+		<!-- create a room on designated station for representative -->
+		<cue name="make_room" >
 			<conditions>
 				<event_cue_signalled />
-				<check_value value="ForceRepresentative.$Faction"/>
-				<check_value value="ForceRepresentative.$HQ"/>
-				<check_value value="ForceRepresentative.$Representative"/>
 			</conditions>
 			<actions>
-				<debug_text text="'ForceRepresentative - Create room for ' + ForceRepresentative.$Faction.name + '  Representative'" />
+				<!-- extend scope to parent namespace (spawn.super) -->
+				<set_value name="$Super" exact="event.param" />
+				<!-- get the $Faction value from the calling cue -->
+				<set_value name="$Faction" exact="$Super.$Faction" />
+				<!-- get the $HQ value from the calling cue -->
+				<set_value name="$HQ" exact="$Super.$HQ" />
+				<!-- get the $Representative value from the calling cue -->
+				<set_value name="$Representative" exact="$Super.$Representative" />
+				
+				<debug_text text="'ForceRepresentative - Create room for ' + $Faction.name + '  Representative'" />
 				<!-- In most case, if the representative wasnt in the universe, he doesnt have any room to sit, this script (almost Vanilla) will make a romm on designated station -->
-				<!-- I take values in ForceRepresentative namespace --> 
-				<set_value name="this.$Faction" exact="ForceRepresentative.$Faction"/>
-				<set_value name="this.$HQ" exact="ForceRepresentative.$HQ"/>
-				<set_value name="this.$Race" exact="this.$HQ.owner.primaryrace" />
-				<set_value name="this.$InteriorSeed" exact="this.$HQ.seed + lookup.roomtype.list.indexof.{roomtype.factionrep}"/>
-				<set_value name="this.$Representative" exact="ForceRepresentative.$Representative"/>
+				<set_value name="$Race" exact="$HQ.owner.primaryrace" />
+				<set_value name="$InteriorSeed" exact="$HQ.seed + lookup.roomtype.list.indexof.{roomtype.factionrep}"/>
 
 				<!-- Logical --> 
-				<get_room_definition macro="this.$CorridorMacro" race="this.$Race" tags="tag.administrationcorridor" seed="this.$InteriorSeed" />
-				<do_if value="not this.$CorridorMacro">
-					<get_room_definition macro="this.$CorridorMacro" race="this.$Race" tags="tag.corridor" seed="this.$InteriorSeed" />
+				<get_room_definition macro="$CorridorMacro" race="$Race" tags="tag.administrationcorridor" seed="$InteriorSeed" />
+				<do_if value="not $CorridorMacro">
+					<get_room_definition macro="$CorridorMacro" race="$Race" tags="tag.corridor" seed="$InteriorSeed" />
 				</do_if>
-				<get_room_definition macro="this.$RoomMacro" doors="this.$RoomDoors" race="this.$Race" tags="tag.factionrep" seed="this.$InteriorSeed" />
+				<get_room_definition macro="$RoomMacro" doors="$RoomDoors" race="$Race" tags="tag.factionrep" seed="$InteriorSeed" />
 				<!-- Create room -->
-				<substitute_text text="this.$InteriorName" source="readtext.{30003}.{10004}">
+				<substitute_text text="$InteriorName" source="readtext.{30003}.{10004}">
 					<replace string="'$FACTION$'" with="$Faction.name" />
 				</substitute_text>
-				<create_dynamic_interior object="this.$HQ" corridor="this.$CorridorMacro" room="this.$RoomMacro" name="this.$InteriorName" interiorname="this.$Interior" corridorname="this.$Corridor" roomname="this.$Room" roomtype="roomtype.factionrep" seed="this.$InteriorSeed" />
-				<do_if value="this.$Interior and this.$Corridor and this.$Room">
+				<create_dynamic_interior object="$HQ" corridor="$CorridorMacro" room="$RoomMacro" name="$InteriorName" interiorname="$Interior" corridorname="$Corridor" roomname="$Room" roomtype="roomtype.factionrep" seed="$InteriorSeed" />
+				<do_if value="$Interior and $Corridor and $Room">
 					<!-- Create room -->
-					<debug_text text="'ForceRepresentative -  Interior for ' + this.$Representative.name + ' created'" />
-					<find_npc_slot name="this.$NPCSlot" object="this.$Room" tags="tag.control"/>
-					<do_if value="not this.$NPCSlot">
-						<find_npc_slot name="this.$NPCSlot" object="this.$Room" />
+					<debug_text text="'ForceRepresentative - Interior for ' + $Representative.name + ' created'" />
+					<find_npc_slot name="$NPCSlot" object="$Room" tags="tag.control"/>
+					<do_if value="not $NPCSlot">
+						<find_npc_slot name="$NPCSlot" object="$Room" />
 					</do_if>
-					<do_if value="this.$NPCSlot">
+					<do_if value="$NPCSlot">
 						<!-- Place faction representative -->
-						<add_actor_to_room actor="this.$Representative" slot="this.$NPCSlot" />
-						<debug_text text="'ForceRepresentative - Representative ' + this.$Representative.name + ' added to room ' + this.$Room + ' (' + this.$RoomMacro + ')'" />
+						<add_actor_to_room actor="$Representative" slot="$NPCSlot" />
+						<debug_text text="'ForceRepresentative - Representative ' + $Representative.name + ' added to room ' + $Room + ' (' + $RoomMacro + ')'" />
 					</do_if>
 					<do_else>
-						<debug_text text="'ForceRepresentative - Could not find slot for ' + this.$Representative.name + ' ({' + $FactionRepresentative + '}) in ' + this.$Room + '(' + this.$RoomMacro + ')'" filter="error" />
+						<debug_text text="'ForceRepresentative - Could not find slot for ' + $Representative.name + ' ({' + $Representative + '}) in ' + $Room + '(' + $RoomMacro + ')'" filter="error" />
 					</do_else>
 				</do_if>
 				<do_else>
-					<debug_text text="'ForceRepresentative - Interior for ' + this.$Representative.name + ' could not be created using this.$CorridorMacro: ' + this.$CorridorMacro + ' and this.$RoomMacro: ' + this.$RoomMacro" filter="error" />
+					<debug_text text="'ForceRepresentative - Interior for ' + $Representative.name + ' could not be created using $CorridorMacro: ' + $CorridorMacro + ' and $RoomMacro: ' + $RoomMacro" filter="error" />
 				</do_else>
 			</actions>
 		</cue>
