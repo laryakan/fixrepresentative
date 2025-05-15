@@ -1,5 +1,5 @@
 # Fix Representative
-In some case, modder forgets or the game bugs. This mod aim to force faction representative spawns or fix them for some mods.
+This mod aim to force faction representative spawns. Or maybe you're a modder and don't want to bother about representative relocation ?
 
 ## What it does ?
 *Works on all Vanilla and DLC factions since v1.2*
@@ -12,11 +12,9 @@ They will search for the representative and place it on a random station of the 
 
 ## Technically ?
 The script will check existance of representative.
-If a representative is missing, the script will check if the station is active.
+If a representative is missing, the script will check if the faction is active.
 Then it will check if there is an eligible station for the representative to land on.
 If none, the script will abort. But if there is one, the script will reset the default HQ settings for this factions, create the representative, create a room for him to sit in and place him inside it.
-
-For the time being, the first version on this mod only check the FRF representative, but other factions can easily be check, including small factions.
 
 - github : https://github.com/laryakan/fixrepresentative
 - nexus : https://www.nexusmods.com/x4foundations/mods/1702
