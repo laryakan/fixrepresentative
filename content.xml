@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <content id="Fix Representative"
 name="Fix Representative"
-description="Fix Representative spawn when you start a new game, if any is missing, this first version only works on FRF Representative (POC)"
+description="Fix Representative spawn if any is missing"
 author="Laryakan"
-version="100"
+version="120"
 date="2025-05-10"
 save="false"
 enabled="1" />
