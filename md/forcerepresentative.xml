@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- FORCE REPRESENTATIVE SCRIPT for Fix Representative mod by Laryakan, 15th of May 2025 -->
+<!-- FORCE REPRESENTATIVE SCRIPT for Fix Representative mod by Laryakan, May 2025 -->
 <!-- Github : https://github.com/laryakan/fixrepresentative -->
 <!-- Nexus : https://www.nexusmods.com/x4foundations/mods/1702 -->
 <mdscript xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="md.xsd" name="ForceRepresentative">
@@ -20,447 +20,42 @@
 				<!-- Iterate over all registered factions -->
 				<do_for_each name="$Faction" in="md.$FactionData">
 					<debug_text text="'ForceRepresentative - Interate on : ' + $Faction" />
-					<!-- ARGON CHECK -->
-					<do_if value="$Faction == faction.argon">
-						<signal_cue_instantly cue="arg" />
-					</do_if>
-					<!-- ANTIGONE CHECK -->
-					<do_if value="$Faction == faction.antigone">
-						<signal_cue_instantly cue="ant" />
-					</do_if>
-					<!-- HATIKVAH CHECK -->
-					<do_if value="$Faction == faction.hatikvah">
-						<signal_cue_instantly cue="hat" />
-					</do_if>
-					<!-- TELADI CHECK -->
-					<do_if value="$Faction == faction.teladi">
-						<signal_cue_instantly cue="tel" />
-					</do_if>
-					<!-- MINISTRY CHECK -->
-					<do_if value="$Faction == faction.ministry">
-						<signal_cue_instantly cue="ministry" />
-					</do_if>
-					<!-- SCALEPLATE CHECK -->
-					<do_if value="$Faction == faction.scaleplate">
-						<signal_cue_instantly cue="sca" />
-					</do_if>
-					<!-- PARANID CHECK -->
-					<do_if value="$Faction == faction.paranid">
-						<signal_cue_instantly cue="par" />
-					</do_if>
-					<!-- HOLY ORDER CHECK -->
-					<do_if value="$Faction == faction.holyorder">
-						<signal_cue_instantly cue="hop" />
-					</do_if>
-					<!-- ALLIANCE CHECK -->
-					<do_if value="$Faction == faction.alliance">
-						<signal_cue_instantly cue="ali" />
-					</do_if>
-					<!-- XENON ??? Nope... -->
-					<!--
 					<do_if value="$Faction == faction.xenon">
-						<signal_cue_instantly cue="xen" />
-						<reset_cue cue="xen" />
+						<!-- DO NOT TRY TO MAKE A XENON REPRESENTATIVE -->
+						<continue />
 					</do_if> 
-					-->
-					<!-- BUCCANEERS CHECK -->
-					<do_if value="$Faction == faction.buccaneers">
-						<signal_cue_instantly cue="duk" />
-					</do_if>
-					<!-- TRINITY CHECK -->
-					<do_if value="$Faction == faction.trinity">
-						<signal_cue_instantly cue="tri" />
-					</do_if>
-					<!-- ZYARTH CHECK -->
-					<do_if value="$Faction == faction.split">
-						<signal_cue_instantly cue="zya" />
-					</do_if>
-					<!-- FREE FAMILIES CHECK -->
-					<do_if value="$Faction == faction.freesplit">
-						<signal_cue_instantly cue="frf" />
-					</do_if>
-					<!-- COURT OF CURBS CHECK -->
-					<do_if value="$Faction == faction.court">
-						<signal_cue_instantly cue="cub" />
-					</do_if>
-					<!-- FALLEN FAMILIES CHECK -->
-					<do_if value="$Faction == faction.fallensplit">
-						<signal_cue_instantly cue="faf" />
-					</do_if>
-					<!-- TERRAN CHECK -->
-					<do_if value="$Faction == faction.terran">
-						<signal_cue_instantly cue="ter" />
-					</do_if>
-					<!-- PIONEERS CHECK -->
-					<do_if value="$Faction == faction.pioneers">
-						<signal_cue_instantly cue="pio" />
-					</do_if>
-					<!-- YAKI CHECK -->
-					<do_if value="$Faction == faction.yaki">
-						<signal_cue_instantly cue="yak" />
-					</do_if>
-					<!-- VIGOR SYNDICATE CHECK -->
-					<do_if value="$Faction == faction.loanshark">
-						<signal_cue_instantly cue="vig" />
-					</do_if>
-					<!-- RIPTIDE RACKERS CHECK -->
-					<do_if value="$Faction == faction.scavenger">
-						<signal_cue_instantly cue="rip" />
-					</do_if>
-					<!-- BORON CHECK -->
-					<do_if value="$Faction == faction.boron">
-						<signal_cue_instantly cue="bor" />
-					</do_if>
-					<!-- QUETTANAUTS CHECK -->
-					<do_if value="$Faction == faction.kaori">
-						<signal_cue_instantly cue="que" />
-					</do_if>
+					<signal_cue_instantly cue="check_store" param="$Faction" />
 				</do_for_each>
 				<reset_cue cue="this" />
 			</actions>
 			<cues>
 				<!-- ===== DATA TRANSFER OBJECT (DTO) CUE, TO STORE ALL NEEDED EXTENDED SCOPE VARIABLE WITHOUT SIDE EFFECTS ===== -->
-				<!-- ARGON DTO -->
-				<cue name="arg" instantiate="true">
+				<!-- GENERIC DTO -  -->
+				<cue name="check_store" instantiate="true">
 					<conditions>
 						<event_cue_signalled />
 					</conditions>
 					<actions>
-						<set_value name="$Faction" exact="faction.argon" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
-						<reset_cue cue="this" />
-					</actions>
-				</cue>
-				
-				<!-- ANTIGONE DTO -->
-				<cue name="ant" instantiate="true">
-					<conditions>
-						<event_cue_signalled />
-					</conditions>
-					<actions>
-						<set_value name="$Faction" exact="faction.antigone" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
-						<reset_cue cue="this" />
-					</actions>
-				</cue>
-				
-				<!-- HATIKVAH DTO -->
-				<cue name="hat" instantiate="true">
-					<conditions>
-						<event_cue_signalled />
-					</conditions>
-					<actions>
-						<set_value name="$Faction" exact="faction.hatikvah" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
-						<reset_cue cue="this" />
-					</actions>
-				</cue>
-				
-				<!-- TELADI DTO -->
-				<cue name="tel" instantiate="true">
-					<conditions>
-						<event_cue_signalled />
-					</conditions>
-					<actions>
-						<set_value name="$Faction" exact="faction.teladi" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
-						<reset_cue cue="this" />
-					</actions>
-				</cue>
-				
-				<!-- MINISTRY DTO - Couldnt use "min" for thiscue, because its a reserved key word -->
-				<cue name="ministry" instantiate="true">
-					<conditions>
-						<event_cue_signalled />
-					</conditions>
-					<actions>
-						<set_value name="$Faction" exact="faction.ministry" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
-						<reset_cue cue="this" />
-					</actions>
-				</cue>
-				
-				<!-- SCALEPLATE DTO -->
-				<cue name="sca" instantiate="true">
-					<conditions>
-						<event_cue_signalled />
-					</conditions>
-					<actions>
-						<set_value name="$Faction" exact="faction.scaleplate" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
-						<reset_cue cue="this" />
-					</actions>
-				</cue>
-				
-				<!-- PARANID DTO -->
-				<cue name="par" instantiate="true">
-					<conditions>
-						<event_cue_signalled />
-					</conditions>
-					<actions>
-						<set_value name="$Faction" exact="faction.paranid" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
-						<reset_cue cue="this" />
-					</actions>
-				</cue>
-				
-				<!-- HOLY ORDER DTO -->
-				<cue name="hop" instantiate="true">
-					<conditions>
-						<event_cue_signalled />
-					</conditions>
-					<actions>
-						<set_value name="$Faction" exact="faction.holyorder" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
-						<reset_cue cue="this" />
-					</actions>
-				</cue>
-				
-				<!-- ALLIANCE DTO -->
-				<cue name="ali" instantiate="true">
-					<conditions>
-						<event_cue_signalled />
-					</conditions>
-					<actions>
-						<set_value name="$Faction" exact="faction.alliance" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
-						<reset_cue cue="this" />
-					</actions>
-				</cue>
-				
-				<!-- XENON DTO -> WILL NOT BE USED !!! If someone call this, the Xenon will probably get a representative (lol) -->
-				<cue name="xen" instantiate="true">
-					<conditions>
-						<event_cue_signalled />
-					</conditions>
-					<actions>
-						<set_value name="$Faction" exact="faction.xenon" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
-						<reset_cue cue="this" />
-					</actions>
-				</cue>
-				
-				<!-- BUCCANEERS DTO -->
-				<cue name="duk" instantiate="true">
-					<conditions>
-						<event_cue_signalled />
-					</conditions>
-					<actions>
-						<set_value name="$Faction" exact="faction.buccaneers" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
-						<reset_cue cue="this" />
-					</actions>
-				</cue>
-				
-				<!-- TRINITY DTO -->
-				<cue name="tri" instantiate="true">
-					<conditions>
-						<event_cue_signalled />
-					</conditions>
-					<actions>
-						<set_value name="$Faction" exact="faction.trinity" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
-						<reset_cue cue="this" />
-					</actions>
-				</cue>
-				
-				<!-- ZYARTH DTO -->
-				<cue name="zya" instantiate="true">
-					<conditions>
-						<event_cue_signalled />
-					</conditions>
-					<actions>
-						<set_value name="$Faction" exact="faction.split" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
-						<reset_cue cue="this" />
-					</actions>
-				</cue>
-				
-				<!-- FREE FAMILIES DTO -->
-				<cue name="frf" instantiate="true">
-					<conditions>
-						<event_cue_signalled />
-					</conditions>
-					<actions>
-						<set_value name="$Faction" exact="faction.freesplit" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
-						<reset_cue cue="this" />
-					</actions>
-				</cue>
-				
-				<!-- COURT OF CURBS DTO -->
-				<cue name="cub" instantiate="true">
-					<conditions>
-						<event_cue_signalled />
-					</conditions>
-					<actions>
-						<set_value name="$Faction" exact="faction.court" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
-						<reset_cue cue="this" />
-					</actions>
-				</cue>
-				
-				<!-- FALLEN FAMILIES DTO -->
-				<cue name="faf" instantiate="true">
-					<conditions>
-						<event_cue_signalled />
-					</conditions>
-					<actions>
-						<set_value name="$Faction" exact="faction.fallensplit" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
-						<reset_cue cue="this" />
-					</actions>
-				</cue>
-				
-				<!-- TERRAN DTO -->
-				<cue name="ter" instantiate="true">
-					<conditions>
-						<event_cue_signalled />
-					</conditions>
-					<actions>
-						<set_value name="$Faction" exact="faction.terran" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
-						<reset_cue cue="this" />
-					</actions>
-				</cue>
-				
-				<!-- PIONEERS DTO -->
-				<cue name="pio" instantiate="true">
-					<conditions>
-						<event_cue_signalled />
-					</conditions>
-					<actions>
-						<set_value name="$Faction" exact="faction.pioneers" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
-						<reset_cue cue="this" />
-					</actions>
-				</cue>
-				
-				<!-- YAKI DTO -->
-				<cue name="yak" instantiate="true">
-					<conditions>
-						<event_cue_signalled />
-					</conditions>
-					<actions>
-						<set_value name="$Faction" exact="faction.yaki" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
-						<reset_cue cue="this" />
-					</actions>
-				</cue>
-				
-				<!-- VIGOR SYNDICATE DTO -->
-				<cue name="vig" instantiate="true">
-					<conditions>
-						<event_cue_signalled />
-					</conditions>
-					<actions>
-						<set_value name="$Faction" exact="faction.loanshark" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
-						<reset_cue cue="this" />
-					</actions>
-				</cue>
-				
-				<!-- RIPTIDE RACKERS DTO -->
-				<cue name="rip" instantiate="true">
-					<conditions>
-						<event_cue_signalled />
-					</conditions>
-					<actions>
-						<set_value name="$Faction" exact="faction.scavenger" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
-						<reset_cue cue="this" />
-					</actions>
-				</cue>
-				
-				<!-- BORON DTO -->
-				<cue name="bor" instantiate="true">
-					<conditions>
-						<event_cue_signalled />
-					</conditions>
-					<actions>
-						<set_value name="$Faction" exact="faction.boron" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
-						<reset_cue cue="this" />
-					</actions>
-				</cue>
-				
-				<!-- QUETTANAUTS DTO -->
-				<cue name="que" instantiate="true">
-					<conditions>
-						<event_cue_signalled />
-					</conditions>
-					<actions>
-						<set_value name="$Faction" exact="faction.kaori" />
-						<debug_text text="'ForceRepresentative - in DTO for for : ' + $Faction" />
-						<set_value name="$SearchSpace" exact="player.galaxy" />
-						<!-- this cue will serve to store every variable in next called cues -->
-						<signal_cue_instantly cue="spawn" param="namespace" />
+						<set_value name="$Faction" exact="event.param" />
+						<debug_text text="'ForceRepresentative - Received an instruction to check representative for : ' + $Faction" />
+
+						<!-- Check if we need to do something - list of condition to make sure that a representative is present somewhere -->
+						<!-- in Vanilla, every active faction needs and HQ with a representative (as Vanilla factionlogic says) -->
+						<!-- and in our case, we will only take care of things if the representative do not exists -->
+						<do_if value="$Faction.isactive and not $Faction.representative.exists">
+							<!-- Rep Missing -->
+							<show_notification text="'MRTF SITREP: ' + $Faction.name + ' representative missing'"/>
+							<debug_text text="'ForceRepresentative - ' + $Faction.name + ' check'" />
+							<set_value name="$SearchSpace" exact="player.galaxy" />
+							<!-- this cue namespace will serve to store every variable we need to export in child cue -->
+							<signal_cue_instantly cue="spawn" param="namespace" />
+						</do_if>
+						<do_else>
+							<!-- if representative already exists, we do nothing -->
+							<debug_text text="'ForceRepresentative - ' + $Faction.name + ' representative already exists or faction is not active'" />
+						</do_else>
+						
+						<!-- reset listener after this instance is destroyed -->
 						<reset_cue cue="this" />
 					</actions>
 				</cue>
@@ -480,60 +75,50 @@
 						<set_value name="$SearchSpace" exact="$Super.$SearchSpace" />
 						<!-- get the $FactionLogic value from the calling cue or lib -->
 						<!-- <set_value name="$FactionLogic" exact="$Super.$FactionLogic" /> -->
-						
-						<!-- dabug, start script -->
-						<debug_text text="'ForceRepresentative - Received an instruction to check representative for : ' + $Faction" />
-						<debug_text text="'ForceRepresentative - ' + $Faction.name + ' check'" />
-
-						<do_if value="not $Faction.representative.exists and $Faction.isactive">
-							<!-- Rep Missing -->
-							<show_notification text="'MRTF SITREP: ' + $Faction.name + ' representative missing'"/>
-							<debug_text text="'ForceRepresentative - ' + $Faction.name + ' representative missing, trying to relocate HQ'" />
-							<!-- Trying to find new HQ with the game methods, do not work ATM @todo : find a way to access library methods -->
-							<!-- <signal_cue_instantly cue="$FactionLogic.RelocateHQ" /> -->
-							<!-- <signal_cue_instantly cue="$FactionLogic.CreateNewFactionRepresentative" /> -->
 							
-							<!-- Recheck, if the game has detected the missing Representative -->
-							<do_if value="not $Faction.representative.exists">
-								<debug_text text="'ForceRepresentative - ' + $Faction.name + ' forced HQ reset didnt solved the problem'" />
-								<!-- if representative still do not exists, we change the HQ no matter what -->
-								<!-- <find_station_by_true_owner name="$HQ" space="$SearchSpace" faction="$Faction" /> -->
-								
-								<find_station name="$Super.$HQ" space="$SearchSpace" owner="$Faction"/>
-								<do_if value="$Super.$HQ and $Super.$HQ.isoperational">
-									<!-- setting up the new HQ, extending data scope -->
-									<set_value name="md.$FactionData.{$Faction}.$Headquarters" exact="$Super.$HQ" />
-									<!-- and then we create the representative -->
-									<create_representative_actor name="$Super.$Representative" station="$Super.$HQ" faction="$Faction" />
-									<!-- create room and place npc, pass super to store global variable un super -->
-									<signal_cue_instantly cue="make_room" param="$Super.namespace" />
-									<reset_cue cue="make_room" />
-									<!-- extending data scope -->
-									<set_value name="md.$FactionData.{$Faction}.$Representative" exact="$Super.$Representative" />
-									<!-- notify the game that we have placed a new representative (for the conversation handler to be able to handle conversation with the player) -->
-									<!--  , do not work ATM @todo : find a way to access library methods -->
-									<!-- <signal_cue_instantly cue="md.NPC_FactionRepresentative.Handler_FactionRepresentative.FactionRepresentativeCreated" param="$Representative" check="false" /> -->
-								</do_if>
-								<do_else>
-									<!-- we didnt find any eligible station -->
-									<debug_text text="'ForceRepresentative - ' + $Faction.name + ' representative cant find HQ'"  filter="error" />
-								</do_else>
-							</do_if>
-							<!-- Last check if representative exists and have a roomm where we can find hem -->
-							<do_if value="not $Faction.representative.exists" >
-								<show_notification text="'MRTF SITREP: ' + $Faction.name + ' representative unreachable'" />
-								<debug_text text="'ForceRepresentative - Cant spawn ' + $Faction.name + '  Representative'"  filter="error" />
+						<debug_text text="'ForceRepresentative - ' + $Faction.name + ' representative missing, trying to relocate HQ'" />
+						<!-- Trying to find new HQ with the game methods, do not work ATM @todo : find a way to access library methods -->
+						<!-- <signal_cue_instantly cue="$FactionLogic.RelocateHQ" /> -->
+						<!-- <signal_cue_instantly cue="$FactionLogic.CreateNewFactionRepresentative" /> -->
+						
+						<!-- Recheck, if the game has detected the missing Representative -->
+						<do_if value="not $Faction.representative.exists">
+							<debug_text text="'ForceRepresentative - ' + $Faction.name + ' forced HQ reset didnt solved the problem'" />
+							<!-- if representative still do not exists, we change the HQ no matter what -->
+							<!-- <find_station_by_true_owner name="$HQ" space="$SearchSpace" faction="$Faction" /> -->
+							
+							<find_station name="$Super.$HQ" space="$SearchSpace" owner="$Faction"/>
+							<do_if value="$Super.$HQ and $Super.$HQ.isoperational">
+								<!-- setting up the new HQ, extending data scope -->
+								<set_value name="md.$FactionData.{$Faction}.$Headquarters" exact="$Super.$HQ" />
+								<!-- and then we create the representative -->
+								<create_representative_actor name="$Super.$Representative" station="$Super.$HQ" faction="$Faction" />
+								<!-- create room and place npc, pass super to store global variable un super -->
+								<signal_cue_instantly cue="make_room" param="$Super.namespace" />
+								<reset_cue cue="make_room" />
+								<!-- extending data scope -->
+								<set_value name="md.$FactionData.{$Faction}.$Representative" exact="$Super.$Representative" />
+								<!-- notify the game that we have placed a new representative (for the conversation handler to be able to handle conversation with the player) -->
+								<!--  , do not work ATM @todo : find a way to access library methods -->
+								<!-- <signal_cue_instantly cue="md.NPC_FactionRepresentative.Handler_FactionRepresentative.FactionRepresentativeCreated" param="$Representative" check="false" /> -->
 							</do_if>
 							<do_else>
-								<!-- we made the representative respawned -->
-								<show_notification text="'MRTF SITREP: ' + $Faction.name + ' representative recovered'"/>
-								<debug_text text="'ForceRepresentative - ' + $Faction.name + ' representative spawned'" />
+								<!-- we didnt find any eligible station -->
+								<debug_text text="'ForceRepresentative - ' + $Faction.name + ' representative cant find HQ'"  filter="error" />
 							</do_else>
 						</do_if>
+						<!-- Last check if representative exists and have a roomm where we can find hem -->
+						<do_if value="not $Faction.representative.exists" >
+							<show_notification text="'MRTF SITREP: ' + $Faction.name + ' representative unreachable'" />
+							<debug_text text="'ForceRepresentative - Cant spawn ' + $Faction.name + '  Representative'"  filter="error" />
+						</do_if>
 						<do_else>
-							<!-- if representative already exists, we do nothing -->
-							<debug_text text="'ForceRepresentative - ' + $Faction.name + ' representative already exists or faction is not active'" />
+							<!-- we made the representative (re)spawned -->
+							<show_notification text="'MRTF SITREP: ' + $Faction.name + ' representative recovered'"/>
+							<debug_text text="'ForceRepresentative - ' + $Faction.name + ' representative spawned'" />
 						</do_else>
+
+						<!-- reset listener after this instance is destroyed -->
 						<reset_cue cue="this" />
 					</actions>
 				</cue>
@@ -588,6 +173,8 @@
 						<do_else>
 							<debug_text text="'ForceRepresentative - Interior for ' + $Representative.name + ' could not be created using $CorridorMacro: ' + $CorridorMacro + ' and $RoomMacro: ' + $RoomMacro" filter="error" />
 						</do_else>
+						
+						<!-- reset listener after this instance is destroyed -->
 						<reset_cue cue="this" />
 					</actions>
 				</cue>
