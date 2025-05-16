@@ -14,18 +14,25 @@
 					<!-- <event_cue_signalled cue="md.Setup.GameLoaded" /> -->
 				</check_any>
 			</conditions>
+			<!-- wait 10 sec for the game to setup things before howling about a missing rep -->
 			<delay exact="10s" />
 			<actions>
 				<show_notification text="'Dispatching the Missing Representative Task Force, aka MRTF...'"/>
+
 				<!-- Iterate over all registered factions -->
 				<do_for_each name="$Faction" in="md.$FactionData">
 					<debug_text text="'ForceRepresentative - Interate on : ' + $Faction" />
 					<do_if value="$Faction == faction.xenon">
 						<!-- DO NOT TRY TO MAKE A XENON REPRESENTATIVE -->
 						<continue />
-					</do_if> 
+					</do_if>
+
+					<!-- start the pipeline for current faction -->
 					<signal_cue_instantly cue="check_store" param="$Faction" />
+
 				</do_for_each>
+
+				<!-- reset listener after this cue instance is destroyed -->
 				<reset_cue cue="this" />
 			</actions>
 			<cues>
@@ -54,8 +61,8 @@
 							<!-- if representative already exists, we do nothing -->
 							<debug_text text="'ForceRepresentative - ' + $Faction.name + ' representative already exists or faction is not active'" />
 						</do_else>
-						
-						<!-- reset listener after this instance is destroyed -->
+
+						<!-- reset listener after this cue instance is destroyed -->
 						<reset_cue cue="this" />
 					</actions>
 				</cue>
@@ -75,19 +82,39 @@
 						<set_value name="$SearchSpace" exact="$Super.$SearchSpace" />
 						<!-- get the $FactionLogic value from the calling cue or lib -->
 						<!-- <set_value name="$FactionLogic" exact="$Super.$FactionLogic" /> -->
-							
+
+						<!-- We first try the Vanilla method -->
 						<debug_text text="'ForceRepresentative - ' + $Faction.name + ' representative missing, trying to relocate HQ'" />
-						<!-- Trying to find new HQ with the game methods, do not work ATM @todo : find a way to access library methods -->
-						<!-- <signal_cue_instantly cue="$FactionLogic.RelocateHQ" /> -->
-						<!-- <signal_cue_instantly cue="$FactionLogic.CreateNewFactionRepresentative" /> -->
-						
+
+
+
 						<!-- Recheck, if the game has detected the missing Representative -->
 						<do_if value="not $Faction.representative.exists">
 							<debug_text text="'ForceRepresentative - ' + $Faction.name + ' forced HQ reset didnt solved the problem'" />
 							<!-- if representative still do not exists, we change the HQ no matter what -->
 							<!-- <find_station_by_true_owner name="$HQ" space="$SearchSpace" faction="$Faction" /> -->
-							
-							<find_station name="$Super.$HQ" space="$SearchSpace" owner="$Faction"/>
+
+							<!-- we first try to find a major station like a Wharf, a Shipyard or and Equipment Dock -->
+							<find_station name="$Super.$HQ" owner="$Faction" space="$SearchSpace">
+								<match_any>
+									<match canbuildships="true"/>
+									<match equipmentdock="true"/>
+								</match_any>
+								<match_content class="class.walkablemodule" checkoperational="true" haswalkableroom="true"/>
+							</find_station>
+
+							<!-- if we didnt find any martching station, we will randomly pick a valid one in the faction we're checking -->
+							<do_if value="not $Super.$HQ or not $Super.$HQ.isoperational">
+								<find_station name="$Super.$HQ" owner="$Faction" space="$SearchSpace">
+									<match_content class="class.walkablemodule" checkoperational="true" haswalkableroom="true"/>
+								</find_station>
+							</do_if>
+							<do_else>
+								<!-- we found a big station for our future representative ! -->
+								<debug_text text="'ForceRepresentative - We have found a BIG STATION for our ' + $Faction.name + ' representative'" />
+							</do_else>
+
+							<!-- if we got a matching station, we put the representative on it before making him a room to sit -->
 							<do_if value="$Super.$HQ and $Super.$HQ.isoperational">
 								<!-- setting up the new HQ, extending data scope -->
 								<set_value name="md.$FactionData.{$Faction}.$Headquarters" exact="$Super.$HQ" />
@@ -99,7 +126,7 @@
 								<!-- extending data scope -->
 								<set_value name="md.$FactionData.{$Faction}.$Representative" exact="$Super.$Representative" />
 								<!-- notify the game that we have placed a new representative (for the conversation handler to be able to handle conversation with the player) -->
-								<!--  , do not work ATM @todo : find a way to access library methods -->
+								<!-- do not work ATM @todo : find a way to access library methods -->
 								<!-- <signal_cue_instantly cue="md.NPC_FactionRepresentative.Handler_FactionRepresentative.FactionRepresentativeCreated" param="$Representative" check="false" /> -->
 							</do_if>
 							<do_else>
@@ -118,11 +145,11 @@
 							<debug_text text="'ForceRepresentative - ' + $Faction.name + ' representative spawned'" />
 						</do_else>
 
-						<!-- reset listener after this instance is destroyed -->
+						<!-- reset listener after this cue instance is destroyed -->
 						<reset_cue cue="this" />
 					</actions>
 				</cue>
-				
+
 				<!-- create a room on designated station for representative, need to instanciate to trigger the cue everytime its called -->
 				<cue name="make_room"  instantiate="true">
 					<conditions>
@@ -137,13 +164,13 @@
 						<set_value name="$HQ" exact="$Super.$HQ" />
 						<!-- get the $Representative value from the calling cue -->
 						<set_value name="$Representative" exact="$Super.$Representative" />
-						
+
 						<debug_text text="'ForceRepresentative - Create room for ' + $Faction.name + '  Representative'" />
 						<!-- In most case, if the representative wasnt in the universe, he doesnt have any room to sit, this script (almost Vanilla) will make a romm on designated station -->
 						<set_value name="$Race" exact="$HQ.owner.primaryrace" />
 						<set_value name="$InteriorSeed" exact="$HQ.seed + lookup.roomtype.list.indexof.{roomtype.factionrep}"/>
 
-						<!-- Logical --> 
+						<!-- Logical -->
 						<get_room_definition macro="$CorridorMacro" race="$Race" tags="tag.administrationcorridor" seed="$InteriorSeed" />
 						<do_if value="not $CorridorMacro">
 							<get_room_definition macro="$CorridorMacro" race="$Race" tags="tag.corridor" seed="$InteriorSeed" />
@@ -173,8 +200,8 @@
 						<do_else>
 							<debug_text text="'ForceRepresentative - Interior for ' + $Representative.name + ' could not be created using $CorridorMacro: ' + $CorridorMacro + ' and $RoomMacro: ' + $RoomMacro" filter="error" />
 						</do_else>
-						
-						<!-- reset listener after this instance is destroyed -->
+
+						<!-- reset listener after this cue instance is destroyed -->
 						<reset_cue cue="this" />
 					</actions>
 				</cue>
