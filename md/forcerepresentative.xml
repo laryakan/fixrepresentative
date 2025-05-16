@@ -83,10 +83,13 @@
 						<!-- get the $FactionLogic value from the calling cue or lib -->
 						<!-- <set_value name="$FactionLogic" exact="$Super.$FactionLogic" /> -->
 
-						<!-- We first try the Vanilla method -->
+						<!-- We first try the Vanilla method by reseting default value and see if the game do its thing (probably not since it didnt the first time) -->
 						<debug_text text="'ForceRepresentative - ' + $Faction.name + ' representative missing, trying to relocate HQ'" />
-
-
+						<do_if value="$Faction.headquarters.exists">
+							<set_faction_headquarters faction="$Faction" station="$Faction.headquarters" headquarters="false" comment="Undo it being the HQ"/>
+						</do_if>
+						<remove_value name="md.$FactionData.{$Faction}.$Headquarters"/>
+						<remove_value name="md.$FactionData.{$Faction}.$Representative" comment="can't set it to null, just remove it"/>
 
 						<!-- Recheck, if the game has detected the missing Representative -->
 						<do_if value="not $Faction.representative.exists">
@@ -117,14 +120,27 @@
 							<!-- if we got a matching station, we put the representative on it before making him a room to sit -->
 							<do_if value="$Super.$HQ and $Super.$HQ.isoperational">
 								<!-- setting up the new HQ, extending data scope -->
+								<set_faction_headquarters faction="$Faction" station="$Super.$HQ"  comment="Setting up new HQ"/>
 								<set_value name="md.$FactionData.{$Faction}.$Headquarters" exact="$Super.$HQ" />
-								<!-- and then we create the representative -->
+								<!-- double check if everything is alright for the game -->
+								<do_if value="$Super.$HQ != $Faction.headquarters">
+									<set_value name="$Faction.headquarters" exact="$Super.$HQ" />
+								</do_if>
+
+								<!-- and now then we create the representative -->
 								<create_representative_actor name="$Super.$Representative" station="$Super.$HQ" faction="$Faction" />
-								<!-- create room and place npc, pass super to store global variable un super -->
+
+								<!-- create room and place npc, pass super to store global variable in super -->
 								<signal_cue_instantly cue="make_room" param="$Super.namespace" />
 								<reset_cue cue="make_room" />
+
 								<!-- extending data scope -->
 								<set_value name="md.$FactionData.{$Faction}.$Representative" exact="$Super.$Representative" />
+								<!-- double check if everything is alright for the game -->
+								<do_if value="$Super.$Representative != $Faction.representative">
+									<set_value name="$Faction.representative" exact="$Super.$Representative" />
+								</do_if>
+
 								<!-- notify the game that we have placed a new representative (for the conversation handler to be able to handle conversation with the player) -->
 								<!-- do not work ATM @todo : find a way to access library methods -->
 								<!-- <signal_cue_instantly cue="md.NPC_FactionRepresentative.Handler_FactionRepresentative.FactionRepresentativeCreated" param="$Representative" check="false" /> -->
