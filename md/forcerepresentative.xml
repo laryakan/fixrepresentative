@@ -17,7 +17,7 @@
 			<!-- wait 10 sec for the game to setup things before howling about a missing rep -->
 			<delay exact="10s" />
 			<actions>
-				<show_notification text="'Dispatching the Missing Representative Task Force, aka MRTF...'"/>
+				<!-- <show_notification text="'Dispatching the Missing Representative Task Force, aka MRTF...'"/> -->
 
 				<!-- Iterate over all registered factions -->
 				<do_for_each name="$Faction" in="md.$FactionData">
