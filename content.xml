@@ -3,7 +3,7 @@
 name="Fix Representative"
 description="Find a new home for every missing faction representative"
 author="Laryakan"
-version="200"
+version="210"
 date="2025-05-10"
 save="false"
 enabled="1" />
