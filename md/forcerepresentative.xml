@@ -26,10 +26,13 @@
 						<!-- DO NOT TRY TO MAKE A XENON REPRESENTATIVE -->
 						<continue />
 					</do_if>
+					<do_if value="$Faction == faction.buccaneers">
+						<!-- DUKES BUCCANEERS HAVE THEIR REPRESENTATIVE ADDED THROUGH A PLOT, MRTF WILL NOT RECOVER HIM -->
+						<continue />
+					</do_if>
 
 					<!-- start the pipeline for current faction -->
 					<signal_cue_instantly cue="check_store" param="$Faction" />
-
 				</do_for_each>
 
 				<!-- reset listener after this cue instance is destroyed -->

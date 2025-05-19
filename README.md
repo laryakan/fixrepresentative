@@ -3,6 +3,7 @@ This mod aim to force faction representative spawns. Or maybe you're a modder an
 
 ## What it does ?
 *Works on all valid registered factions since v2 - Vanilla, DLC and mods, as soone as the factions is registered in md.$FactionData*
+*There is an exclude rule on XENON (for obvious reason) and DUKES BUCCANEERS which is meant to be added by a story plot, not from the game start*
 
 Each time you start a new game or load one (normally,) an mdscript will run an check if there is any missing faction representative. For example, this can happen if you use a mod that modify sector or cluster, or just if the game messed up and you didnt noticed it before the promotion.
 Some factions are less impacted than other. But for faction like Free Families, the representative is randomly placed on a whard, shipyard or equipment dock in FRF sectors, many things can happen that prevent the representative spawn.
